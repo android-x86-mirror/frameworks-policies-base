@@ -192,14 +192,14 @@ public class MidWindowManager implements WindowManagerPolicy {
 
     private void showGlobalActionsDialog() {
         if (mGlobalActions == null) {
-            mGlobalActions = new GlobalActions(mContext, mPowerManager);
+            mGlobalActions = new GlobalActions(mContext);
         }
         mGlobalActions.showDialog(false, isDeviceProvisioned());
     }
 
     private boolean isDeviceProvisioned() {
-        return Settings.System.getInt(
-                mContext.getContentResolver(), Settings.System.DEVICE_PROVISIONED, 0) != 0;
+        return Settings.Secure.getInt(
+                mContext.getContentResolver(), Settings.Secure.DEVICE_PROVISIONED, 0) != 0;
     }
 
     /**
@@ -878,6 +878,24 @@ public class MidWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     public int interceptKeyTq(RawInputEvent event, boolean screenIsOn) {
         int result = ACTION_PASS_TO_USER | ACTION_POKE_USER_ACTIVITY;
+        int type = event.type;
+        int code = event.keycode;
+        boolean down = event.value != 0;
+      
+        if ((type == RawInputEvent.EV_KEY)&&(code == KeyEvent.KEYCODE_POWER)) { 
+           
+            if (down) {
+                if (!screenIsOn) {
+                    mShouldTurnOffOnKeyUp = false;
+                } else {                   
+                    // only try to turn off the screen if we didn't already hang up
+                    mShouldTurnOffOnKeyUp = true;
+                    mHandler.postDelayed(mEndCallLongPress,
+                            ViewConfiguration.getGlobalActionKeyTimeout());
+                    result &= ~ACTION_PASS_TO_USER;
+                }
+            }
+        }
         return result;
     }
 
