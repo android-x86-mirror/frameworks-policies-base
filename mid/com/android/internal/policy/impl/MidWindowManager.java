@@ -80,6 +80,7 @@ import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY;
 import static android.view.WindowManager.LayoutParams.TYPE_TOAST;
+import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD;
 import android.view.WindowManagerImpl;
 import android.view.WindowManagerPolicy;
 import android.view.WindowManagerPolicy.WindowState;
@@ -258,6 +259,8 @@ public class MidWindowManager implements WindowManagerPolicy {
                 // XXX right now the app process has complete control over
                 // this...  should introduce a token to let the system
                 // monitor/control what they are doing.
+                break;
+            case TYPE_INPUT_METHOD:
                 break;
             case TYPE_PHONE:
             case TYPE_PRIORITY_PHONE:
