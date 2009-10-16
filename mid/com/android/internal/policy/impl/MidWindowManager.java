@@ -97,7 +97,7 @@ public class MidWindowManager implements WindowManagerPolicy {
     private static final String TAG = "MidWindowManager";
     private static final boolean DEBUG = false;
     private static final boolean localLOGV = DEBUG ? Config.LOGD : Config.LOGV;
-    private static final boolean SHOW_STARTING_ANIMATIONS = true;
+    private static final boolean SHOW_STARTING_ANIMATIONS = false;
     
     private static final int APPLICATION_LAYER = 1;
     private static final int PHONE_LAYER = 2;
@@ -127,6 +127,9 @@ public class MidWindowManager implements WindowManagerPolicy {
     private static final boolean SINGLE_PRESS_OFF = false;
     
     private static final float SLIDE_TOUCH_EVENT_SIZE_LIMIT = 0.6f;
+
+    // Debugging: set this to have the system act like there is no hard keyboard.
+    static final boolean KEYBOARD_ALWAYS_HIDDEN = false;
     
     static public final String SYSTEM_DIALOG_REASON_KEY = "reason";
     static public final String SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS = "globalactions";
@@ -168,6 +171,7 @@ public class MidWindowManager implements WindowManagerPolicy {
     private static final int ENDCALL_SLEEPS = 0x2;
     private static final int DEFAULT_ENDCALL_BEHAVIOR = ENDCALL_SLEEPS;
     private int mEndcallBehavior;
+    boolean mHasSoftInput = true;
 
     private ShortcutManager mShortcutManager;
     private PowerManager.WakeLock mBroadcastWakeLock;
@@ -294,10 +298,17 @@ public class MidWindowManager implements WindowManagerPolicy {
     
     /** {@inheritDoc} */
     public void adjustConfigurationLw(Configuration config) {
-        mPowerManager.setKeyboardVisibility(true);
-        config.keyboardHidden = Configuration.KEYBOARDHIDDEN_NO;
         mPowerManager.userActivity(SystemClock.uptimeMillis(), false,
                 LocalPowerManager.OTHER_EVENT);
+        final boolean lidOpen = !KEYBOARD_ALWAYS_HIDDEN && mLidOpen;
+	Log.i(TAG, "mLidOpen: " + mLidOpen + "    lidOpen:" + lidOpen);
+	mPowerManager.setKeyboardVisibility(lidOpen);
+	config.keyboardHidden = (lidOpen || mHasSoftInput)
+            ? Configuration.KEYBOARDHIDDEN_NO
+            : Configuration.KEYBOARDHIDDEN_YES;
+	config.hardKeyboardHidden = lidOpen
+            ? Configuration.KEYBOARDHIDDEN_NO
+            : Configuration.KEYBOARDHIDDEN_YES;
     }
     
     public boolean isCheekPressedAgainstScreen(MotionEvent ev) {
