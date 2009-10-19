@@ -202,6 +202,11 @@ public class MidWindowManager implements WindowManagerPolicy {
         mGlobalActions.showDialog(false, isDeviceProvisioned());
     }
 
+    private boolean isSoftKeyBoardEnable() {
+	return Settings.System.getInt(
+                mContext.getContentResolver(), Settings.System.SOfTKERBOARD, 1) == 0;
+    }
+
     private boolean isDeviceProvisioned() {
         return Settings.Secure.getInt(
                 mContext.getContentResolver(), Settings.Secure.DEVICE_PROVISIONED, 0) != 0;
@@ -306,7 +311,7 @@ public class MidWindowManager implements WindowManagerPolicy {
 	config.keyboardHidden = (lidOpen || mHasSoftInput)
             ? Configuration.KEYBOARDHIDDEN_NO
             : Configuration.KEYBOARDHIDDEN_YES;
-	config.hardKeyboardHidden = lidOpen
+	config.hardKeyboardHidden = (lidOpen || isSoftKeyBoardEnable())
             ? Configuration.KEYBOARDHIDDEN_NO
             : Configuration.KEYBOARDHIDDEN_YES;
     }
