@@ -204,7 +204,7 @@ public class MidWindowManager implements WindowManagerPolicy {
 
     private boolean isSoftKeyBoardEnable() {
 	return Settings.System.getInt(
-                mContext.getContentResolver(), Settings.System.SOfTKERBOARD, 1) == 0;
+                mContext.getContentResolver(), Settings.System.SOFTKEYBOARD, 1) == 0;
     }
 
     private boolean isDeviceProvisioned() {
