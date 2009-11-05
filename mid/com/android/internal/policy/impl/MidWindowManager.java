@@ -901,19 +901,29 @@ public class MidWindowManager implements WindowManagerPolicy {
         int code = event.keycode;
         boolean down = event.value != 0;
       
-        if ((type == RawInputEvent.EV_KEY)&&(code == KeyEvent.KEYCODE_POWER)) { 
+        if (type == RawInputEvent.EV_KEY){
+            if (code == KeyEvent.KEYCODE_POWER) {
            
-            if (down) {
-                if (!screenIsOn) {
-                    mShouldTurnOffOnKeyUp = false;
-                } else {                   
-                    // only try to turn off the screen if we didn't already hang up
-                    mShouldTurnOffOnKeyUp = true;
-                    mHandler.postDelayed(mEndCallLongPress,
-                            ViewConfiguration.getGlobalActionKeyTimeout());
+                if (down) {
+                    if (!screenIsOn) {
+                        mShouldTurnOffOnKeyUp = false;
+	                } else {
+	                    // only try to turn off the screen if we didn't already hang up
+	                    mShouldTurnOffOnKeyUp = true;
+	                    result &= ~ACTION_PASS_TO_USER;
+	                    mHandler.postDelayed(mEndCallLongPress,
+                                ViewConfiguration.getGlobalActionKeyTimeout());
+	                }
+	            }
+	        } else if (((code == KeyEvent.KEYCODE_UNKNOWN) &&
+	                (event.scancode == KeyEvent.SCANCODE_SLEEP))){
+                    if (!down) {
+	                    result &= ~(ACTION_POKE_USER_ACTIVITY | ACTION_PASS_TO_USER);
+                        result |= ACTION_GO_TO_SLEEP;
+                } else {
                     result &= ~ACTION_PASS_TO_USER;
                 }
-            }
+	        }
         }
         return result;
     }

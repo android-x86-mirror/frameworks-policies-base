@@ -35,11 +35,15 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.net.wifi.IWifiManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.provider.CallLog.Calls;
 import android.telephony.TelephonyManager;
@@ -1100,6 +1104,7 @@ public class MidWindow extends Window implements MenuBuilder.Callback {
      * @see android.view.KeyEvent
      */
     protected boolean onKeyDown(int featureId, int keyCode, KeyEvent event) {
+        Log.i(TAG, "onKeyDown for mid policy is called: " + keyCode);
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_DOWN: {
@@ -1198,6 +1203,14 @@ public class MidWindow extends Window implements MenuBuilder.Callback {
                     mSearchKeyDownReceived = true;
                 }
                 break;
+            }
+            case KeyEvent.KEYCODE_UNKNOWN: {
+                if (event.getScanCode() == KeyEvent.SCANCODE_WIFI) {
+                    Log.i(TAG,"change WIFI state");
+                    Intent intent = new Intent(Intent.ACTION_WIFI_BUTTON);
+                    getContext().sendBroadcast(intent);
+                    return true;
+                }
             }
         }
 
