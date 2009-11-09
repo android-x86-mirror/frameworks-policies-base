@@ -1204,13 +1204,11 @@ public class MidWindow extends Window implements MenuBuilder.Callback {
                 }
                 break;
             }
-            case KeyEvent.KEYCODE_UNKNOWN: {
-                if (event.getScanCode() == KeyEvent.SCANCODE_WIFI) {
-                    Log.i(TAG,"change WIFI state");
-                    Intent intent = new Intent(Intent.ACTION_WIFI_BUTTON);
-                    getContext().sendBroadcast(intent);
-                    return true;
-                }
+            case KeyEvent.KEYCODE_WIFI: {
+                Log.i(TAG,"change WIFI state");
+                Intent intent = new Intent(Intent.ACTION_WIFI_BUTTON);
+                getContext().sendBroadcast(intent);
+                return true;
             }
         }
 

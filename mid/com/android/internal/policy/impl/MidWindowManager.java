@@ -915,11 +915,10 @@ public class MidWindowManager implements WindowManagerPolicy {
                                 ViewConfiguration.getGlobalActionKeyTimeout());
 	                }
 	            }
-	        } else if (((code == KeyEvent.KEYCODE_UNKNOWN) &&
-	                (event.scancode == KeyEvent.SCANCODE_SLEEP))){
-                    if (!down) {
-	                    result &= ~(ACTION_POKE_USER_ACTIVITY | ACTION_PASS_TO_USER);
-                        result |= ACTION_GO_TO_SLEEP;
+	        } else if (code == KeyEvent.KEYCODE_SLEEP){
+                if (!down) {
+	                result &= ~(ACTION_POKE_USER_ACTIVITY | ACTION_PASS_TO_USER);
+                    result |= ACTION_GO_TO_SLEEP;
                 } else {
                     result &= ~ACTION_PASS_TO_USER;
                 }
