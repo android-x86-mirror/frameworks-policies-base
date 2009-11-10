@@ -1124,7 +1124,23 @@ public class MidWindow extends Window implements MenuBuilder.Callback {
                 }
                 return true;
             }
-
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+            {
+                AudioManager audioManager = 
+                (AudioManager) getContext().getSystemService(
+                        Context.AUDIO_SERVICE);
+                if (audioManager != null) {
+                    /*
+                     * Adjust the volume in on key down since it is more
+                     * responsive to the user.
+                     */
+                    if (audioManager.isMusicActive() == true)
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,0,AudioManager.FLAG_SHOW_UI);
+                    else
+                        audioManager.setStreamVolume(AudioManager.STREAM_RING,0,AudioManager.FLAG_SHOW_UI);
+                }
+                return true;
+            }
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                 /* Suppress PLAYPAUSE toggle if Phone is ringing or in-call,
                  * to avoid music playback */
