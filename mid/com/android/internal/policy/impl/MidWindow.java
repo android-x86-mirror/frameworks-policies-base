@@ -151,6 +151,8 @@ public class MidWindow extends Window implements MenuBuilder.Callback {
     private int mVolumeControlStreamType = AudioManager.USE_DEFAULT_STREAM_TYPE;
     private long mVolumeKeyUpTime;
 
+    private int mMutedVolume = 0;
+
     private KeyguardManager mKeyguardManager = null;
 
     private TelephonyManager mTelephonyManager = null;
@@ -1121,23 +1123,28 @@ public class MidWindow extends Window implements MenuBuilder.Callback {
                                     : AudioManager.ADJUST_LOWER,
                             mVolumeControlStreamType,
                             AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
+
+                    /* Forget the remembered value and mute next time */
+                    mMutedVolume = 0;
                 }
                 return true;
             }
-            case KeyEvent.KEYCODE_VOLUME_MUTE:
-            {
-                AudioManager audioManager = 
-                (AudioManager) getContext().getSystemService(
+            case KeyEvent.KEYCODE_VOLUME_MUTE: {
+                AudioManager audioManager = (AudioManager) getContext().getSystemService(
                         Context.AUDIO_SERVICE);
                 if (audioManager != null) {
                     /*
-                     * Adjust the volume in on key down since it is more
-                     * responsive to the user.
+                     * The approach is not satisfied. There should be an API to get
+                     * the suggested audio stream like adjustSuggestedStreamVolume.
+                     *
+                     * Should we consider mVolumeControlStreamType != USE_DEFAULT_STREAM_TYPE ?
                      */
-                    if (audioManager.isMusicActive() == true)
-                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,0,AudioManager.FLAG_SHOW_UI);
-                    else
-                        audioManager.setStreamVolume(AudioManager.STREAM_RING,0,AudioManager.FLAG_SHOW_UI);
+                    int stream = (audioManager.isMusicActive() == true) ?
+                            AudioManager.STREAM_MUSIC : AudioManager.STREAM_RING;
+                    int currentVolume = audioManager.getStreamVolume(stream);
+                    audioManager.setStreamVolume(stream, mMutedVolume,
+                            AudioManager.FLAG_SHOW_UI);
+                    mMutedVolume = (mMutedVolume == 0) ? currentVolume : 0;
                 }
                 return true;
             }
@@ -1249,6 +1256,10 @@ public class MidWindow extends Window implements MenuBuilder.Callback {
      */
     protected boolean onKeyUp(int featureId, int keyCode, KeyEvent event) {
         switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                /* Only play a sound when unmute */
+                if (mMutedVolume != 0)
+                    return true;
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_DOWN: {
                 AudioManager audioManager = (AudioManager) getContext().getSystemService(
