@@ -191,7 +191,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
                     public void onPress() {
                         // shutdown by making sure radio and power are handled accordingly.
-                        ShutdownThread.shutdown(mContext, true);
+                        ShutdownThread.shutdown(mContext, true, false);
+
                     }
 
                     public boolean showDuringKeyguard() {
@@ -201,7 +202,26 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     public boolean showBeforeProvisioning() {
                         return true;
                     }
-                });
+                },
+
+                new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_power_off,
+                        R.string.global_action_reboot) {
+
+                    public void onPress() {
+                        // shutdown by making sure radio and power are handled accordingly.
+                        ShutdownThread.shutdown(mContext, true,true);
+                    }
+
+                    public boolean showDuringKeyguard() {
+                        return true;
+                    }
+
+                    public boolean showBeforeProvisioning() {
+                        return true;
+                    }
+                }
+        );
 
         mAdapter = new MyAdapter();
 
