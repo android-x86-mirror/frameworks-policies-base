@@ -1755,7 +1755,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                                         mKeyguardMediator.isShowing());
 
         if (false) {
-            Log.d(TAG, "interceptKeyTq event=" + event + " keycode=" + event.keycode
+            Log.d(TAG, "interceptKeyTq event=" + event + " value=" + event.value + " keycode=" + event.keycode
                   + " screenIsOn=" + screenIsOn + " keyguardActive=" + keyguardActive);
         }
 
@@ -1869,7 +1869,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                                 ViewConfiguration.getGlobalActionKeyTimeout());
                         result &= ~ACTION_PASS_TO_USER;
                     }
-                } else {
+                } else if (false) {
+                   /*
+                    * I have to disable this on the EeePC, since it pushes up
+                    * "key up" event right after the "key down" event, there
+                    * is not way for Android to display the power dialog.
+                    */
                     mHandler.removeCallbacks(mPowerLongPress);
                     if (mShouldTurnOffOnKeyUp) {
                         mShouldTurnOffOnKeyUp = false;
