@@ -155,6 +155,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
     private KeyguardManager mKeyguardManager = null;
 
     private TelephonyManager mTelephonyManager = null;
+    private int mMutedVolume = 0;
     
     public PhoneWindow(Context context) {
         super(context);
@@ -1140,6 +1141,28 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                                     : AudioManager.ADJUST_LOWER,
                             mVolumeControlStreamType,
                             AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
+                    /* Forget the remembered value and mute next time */
+                    mMutedVolume = 0;
+                }
+                return true;
+            }
+
+            case KeyEvent.KEYCODE_VOLUME_MUTE: {
+                AudioManager audioManager = (AudioManager) getContext().getSystemService(
+                        Context.AUDIO_SERVICE);
+                if (audioManager != null) {
+                    /*
+                     * The approach is not satisfied. There should be an API to get
+                     * the suggested audio stream like adjustSuggestedStreamVolume.
+                     *
+                     * Should we consider mVolumeControlStreamType != USE_DEFAULT_STREAM_TYPE ?
+                     */
+                    int stream = (audioManager.isMusicActive() == true) ?
+                            AudioManager.STREAM_MUSIC : AudioManager.STREAM_RING;
+                    int currentVolume = audioManager.getStreamVolume(stream);
+                    audioManager.setStreamVolume(stream, mMutedVolume,
+                            AudioManager.FLAG_SHOW_UI);
+                    mMutedVolume = (mMutedVolume == 0) ? currentVolume : 0;
                 }
                 return true;
             }
@@ -1254,6 +1277,13 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 }
                 break;
             }
+
+            case KeyEvent.KEYCODE_WIFI: {
+                Log.i(TAG,"change WIFI state");
+                Intent intent = new Intent(Intent.ACTION_WIFI_BUTTON);
+                getContext().sendBroadcast(intent);
+                return true;
+            }
         }
 
         return false;
@@ -1285,6 +1315,11 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         //        + " flags=0x" + Integer.toHexString(event.getFlags()));
         
         switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                /* Only play a sound when unmute */
+                if (mMutedVolume != 0)
+                    return true;
+
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_DOWN: {
                 AudioManager audioManager = (AudioManager) getContext().getSystemService(

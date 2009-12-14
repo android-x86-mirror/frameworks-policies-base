@@ -1822,6 +1822,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         Log.w(TAG, "VOLUME button: RemoteException from getPhoneInterface()", ex);
                     }
                 }
+            } else if (code == KeyEvent.KEYCODE_SLEEP) {
+                if (!down) {
+                    result &= ~(ACTION_POKE_USER_ACTIVITY | ACTION_PASS_TO_USER);
+                    result |= ACTION_GO_TO_SLEEP;
+                } else {
+                    result &= ~ACTION_PASS_TO_USER;
+                }
             }
         }
 
