@@ -2032,14 +2032,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     public boolean isWakeRelMovementTq(int device, int classes,
             RawInputEvent event) {
         // if it's tagged with one of the wake bits, it wakes up the device
-        return ((event.flags & (FLAG_WAKE | FLAG_WAKE_DROPPED)) != 0);
+        return (((classes & RawInputEvent.CLASS_MOUSE) != 0)||( (event.flags & (FLAG_WAKE | FLAG_WAKE_DROPPED)) != 0));
     }
 
     /** {@inheritDoc} */
     public boolean isWakeAbsMovementTq(int device, int classes,
             RawInputEvent event) {
         // if it's tagged with one of the wake bits, it wakes up the device
-        return ((event.flags & (FLAG_WAKE | FLAG_WAKE_DROPPED)) != 0);
+        return (((classes & RawInputEvent.CLASS_MOUSE) != 0) || (event.flags & (FLAG_WAKE | FLAG_WAKE_DROPPED)) != 0);
     }
 
     /**
@@ -2050,7 +2050,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // like to have pressing it wake the device up, so force it here.
         int keycode = event.keycode;
         int flags = event.flags;
-        if (keycode == RawInputEvent.BTN_MOUSE) {
+        int scancode = event.scancode;
+        if ((keycode == RawInputEvent.BTN_MOUSE)|| (scancode == RawInputEvent.BTN_MOUSE) ||
+			(scancode == RawInputEvent.BTN_RIGHT)) {
             flags |= WindowManagerPolicy.FLAG_WAKE;
         }
         return (flags
