@@ -933,7 +933,7 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
         if (DEBUG) Log.d(TAG, "adjustUserActivityLocked mShowing: " + mShowing + " mHidden: " + mHidden);
         boolean enabled = !mShowing || mHidden;
         mRealPowerManager.enableUserActivity(enabled);
-        if (!enabled && mScreenOn) {
+        if (!enabled) {
             // reinstate our short screen timeout policy
             pokeWakelock();
         }
