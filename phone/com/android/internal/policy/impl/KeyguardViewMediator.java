@@ -546,7 +546,7 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
             final boolean lockedOrMissing = state.isPinLocked()
                     || ((state == IccCard.State.ABSENT) && requireSim);
 
-            if (!lockedOrMissing && !provisioned) {
+            if (false && !lockedOrMissing && !provisioned) {
                 if (DEBUG) Log.d(TAG, "doKeyguard: not showing because device isn't provisioned"
                         + " and the sim is not locked or missing");
                 return;
