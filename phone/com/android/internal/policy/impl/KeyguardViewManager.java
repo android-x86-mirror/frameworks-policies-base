@@ -99,7 +99,7 @@ public class KeyguardViewManager implements KeyguardWindowController {
 
             mKeyguardHost = new KeyguardViewHost(mContext, mCallback);
 
-            final int stretch = ViewGroup.LayoutParams.MATCH_PARENT;
+            final int stretch = ViewGroup.LayoutParams.WRAP_CONTENT;
             int flags = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
                     | WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER
                     | WindowManager.LayoutParams.FLAG_KEEP_SURFACE_WHILE_ANIMATING
