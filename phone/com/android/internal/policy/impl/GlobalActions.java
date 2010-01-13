@@ -180,11 +180,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         };
 
         mItems = Lists.newArrayList(
-                // silent mode
-                mSilentModeToggle,
-                // next: airplane mode
-                mAirplaneModeOn,
-                // last: power off
+                // power off
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_power_off,
                         R.string.global_action_power_off) {
@@ -220,7 +216,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     public boolean showBeforeProvisioning() {
                         return true;
                     }
-                }
+                },
+                // silent mode
+                mSilentModeToggle,
+                // next: airplane mode
+                mAirplaneModeOn
         );
 
         mAdapter = new MyAdapter();
