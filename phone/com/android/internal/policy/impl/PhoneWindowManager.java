@@ -2066,7 +2066,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         int flags = event.flags;
         int scancode = event.scancode;
         if ((keycode == RawInputEvent.BTN_MOUSE)|| (scancode == RawInputEvent.BTN_MOUSE) ||
-			(scancode == RawInputEvent.BTN_RIGHT)) {
+                       (scancode == RawInputEvent.BTN_RIGHT) ||
+                       (scancode == RawInputEvent.BTN_TOUCH)) {
             flags |= WindowManagerPolicy.FLAG_WAKE;
         }
         return (flags
