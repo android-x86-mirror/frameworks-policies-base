@@ -245,6 +245,8 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
      */
     private boolean mWaitingUntilKeyguardVisible = false;
 
+    private boolean mDisableShowLocked;
+
     public KeyguardViewMediator(Context context, PhoneWindowManager callback,
             LocalPowerManager powerManager) {
         mContext = context;
@@ -287,6 +289,8 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
 
         final ContentResolver cr = mContext.getContentResolver();
         mShowLockIcon = (Settings.System.getInt(cr, "show_status_bar_lock", 0) == 1);
+
+        mDisableShowLocked = (Settings.System.getInt(cr, Settings.System.LOCK_PATTERN_DISABLE, 0) == 1);
     }
 
     /**
@@ -392,7 +396,9 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
                     mExitSecureCallback = null;
                     resetStateLocked();
                 } else {
-                    showLocked();
+                    if (!mDisableShowLocked) {
+                        showLocked();
+                    }
 
                     // block until we know the keygaurd is done drawing (and post a message
                     // to unblock us after a timeout so we don't risk blocking too long
@@ -553,7 +559,9 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
             }
 
             if (DEBUG) Log.d(TAG, "doKeyguard: showing the lock screen");
-            showLocked();
+            if (!mDisableShowLocked) {
+                showLocked();
+            }
         }
     }
 
