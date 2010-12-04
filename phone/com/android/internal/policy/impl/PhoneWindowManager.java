@@ -46,6 +46,7 @@ import android.os.SystemProperties;
 import android.os.Vibrator;
 import android.provider.Settings;
 
+import com.android.internal.app.ShutdownThread;
 import com.android.internal.policy.PolicyManager;
 import com.android.internal.telephony.ITelephony;
 import com.android.internal.widget.PointerLocationView;
@@ -440,7 +441,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mShouldTurnOffOnKeyUp = false;
             performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
             sendCloseSystemWindows(SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS);
-            showGlobalActionsDialog();
+            final ContentResolver cr = mContext.getContentResolver();
+            if (Settings.System.getInt(cr, Settings.System.REMOVE_POWER_OFF_DIALOG, 0) == 0) {
+                showGlobalActionsDialog();
+            } else {
+                ShutdownThread.shutdown(mContext, false);
+            }
         }
     };
 

@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -200,8 +201,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
                     public void onPress() {
                         // shutdown by making sure radio and power are handled accordingly.
-                        ShutdownThread.shutdown(mContext, true, false);
-
+                        final ContentResolver cr = mContext.getContentResolver();
+                        if (Settings.System.getInt(cr, Settings.System.DISABLE_CONFIRMATION, 0) == 0) {
+                            ShutdownThread.shutdown(mContext, true, false);
+                        } else {
+                            ShutdownThread.shutdown(mContext, false);
+                        }
                     }
 
                     public boolean showDuringKeyguard() {
