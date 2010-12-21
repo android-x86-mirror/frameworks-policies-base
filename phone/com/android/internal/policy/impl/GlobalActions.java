@@ -224,7 +224,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
                     public void onPress() {
                         // shutdown by making sure radio and power are handled accordingly.
-                        ShutdownThread.shutdown(mContext, true,true);
+                        final ContentResolver cr = mContext.getContentResolver();
+                        if (Settings.System.getInt(cr, Settings.System.DISABLE_CONFIRMATION, 0) == 0) {
+                            ShutdownThread.shutdown(mContext, true, true);
+                        } else {
+                            ShutdownThread.shutdown(mContext, false, true); /* no confirmation */
+                        }
                     }
 
                     public boolean showDuringKeyguard() {
