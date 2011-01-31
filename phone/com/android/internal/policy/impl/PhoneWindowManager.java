@@ -272,17 +272,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Nothing to see here, move along...
     int mFancyRotationAnimation;
 
-    static boolean mFirstAdjustSoftkeyboard = true;
-
     ShortcutManager mShortcutManager;
     PowerManager.WakeLock mBroadcastWakeLock;
 
     int lastKeyCode = KeyEvent.getMaxKeyCode() + 1; //invalid code
     int keyRepeatCount = 0;
 
-    private boolean isSoftKeyBoardEnable() {
+    private boolean isSoftKeyBoardDisabled() {
         return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.SOFTKEYBOARD, 0) != 0;
+                Settings.System.SOFTKEYBOARD, 1) != 1;
     }
 
     class SettingsObserver extends ContentObserver {
@@ -729,25 +727,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     public void adjustConfigurationLw(Configuration config) {
         readLidState();
-        final boolean lidOpen = !KEYBOARD_ALWAYS_HIDDEN && mLidOpen;
-        mPowerManager.setKeyboardVisibility(lidOpen);
-        if (mFirstAdjustSoftkeyboard) {
-            Settings.System.putInt(mContext.getContentResolver(),
-                    Settings.System.SOFTKEYBOARD, lidOpen ? 0 : 1);
-        } else {
-            config.hardKeyboardHidden = determineHiddenState(isSoftKeyBoardEnable(),
-                    mLidKeyboardAccessibility, Configuration.HARDKEYBOARDHIDDEN_NO,
-                    Configuration.HARDKEYBOARDHIDDEN_YES);
-            config.navigationHidden = determineHiddenState(isSoftKeyBoardEnable(),
-                    mLidNavigationAccessibility, Configuration.NAVIGATIONHIDDEN_NO,
-                    Configuration.NAVIGATIONHIDDEN_YES);
-            config.keyboardHidden = (config.hardKeyboardHidden ==
-                    Configuration.HARDKEYBOARDHIDDEN_NO || mHasSoftInput)
-                    ? Configuration.KEYBOARDHIDDEN_NO
-                    : Configuration.KEYBOARDHIDDEN_YES;
-        }
+        final boolean lidOpen = isSoftKeyBoardDisabled() ||
+                (!KEYBOARD_ALWAYS_HIDDEN && mLidOpen);
 
-	mFirstAdjustSoftkeyboard = false;
+        mPowerManager.setKeyboardVisibility(lidOpen);
+        config.hardKeyboardHidden = determineHiddenState(lidOpen,
+                mLidKeyboardAccessibility, Configuration.HARDKEYBOARDHIDDEN_NO,
+                Configuration.HARDKEYBOARDHIDDEN_YES);
+        config.navigationHidden = determineHiddenState(lidOpen,
+                mLidNavigationAccessibility, Configuration.NAVIGATIONHIDDEN_NO,
+                Configuration.NAVIGATIONHIDDEN_YES);
+        config.keyboardHidden = (config.hardKeyboardHidden ==
+                Configuration.HARDKEYBOARDHIDDEN_NO || mHasSoftInput)
+                ? Configuration.KEYBOARDHIDDEN_NO
+                : Configuration.KEYBOARDHIDDEN_YES;
     }
     
     public boolean isCheekPressedAgainstScreen(MotionEvent ev) {
